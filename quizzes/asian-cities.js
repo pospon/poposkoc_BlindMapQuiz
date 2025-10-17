@@ -1,4 +1,4 @@
-const QUIZ_DATA = {
+window.QUIZ_DATA = {
   id: "asian-cities",
   title: "Asian Cities",
   description: "Locate major cities across the Asian continent",

@@ -146,7 +146,6 @@
     const quizId = urlParams.get('quiz') || 'world-capitals';
 
     // ========== LOAD QUIZ DATA ==========
-    let QUIZ_DATA = null;
     let TOTAL_ROUNDS = 10;
     let locations = [];
 
@@ -154,17 +153,17 @@
     const script = document.getElementById('quiz-data-script');
     script.src = `quizzes/${quizId}.js`;
     script.onload = function() {
-      if (typeof QUIZ_DATA === 'undefined') {
+      if (!window.QUIZ_DATA) {
         alert('Quiz not found! Redirecting to home...');
         window.location.href = 'index.html';
         return;
       }
 
       // Set quiz data
-      locations = QUIZ_DATA.locations;
-      TOTAL_ROUNDS = QUIZ_DATA.totalRounds;
-      document.getElementById('quiz-title').textContent = QUIZ_DATA.title;
-      document.title = `Blind Map Quiz - ${QUIZ_DATA.title}`;
+      locations = window.QUIZ_DATA.locations;
+      TOTAL_ROUNDS = window.QUIZ_DATA.totalRounds;
+      document.getElementById('quiz-title').textContent = window.QUIZ_DATA.title;
+      document.title = `Blind Map Quiz - ${window.QUIZ_DATA.title}`;
 
       // Start the game
       initializeGame();

@@ -1,4 +1,4 @@
-const QUIZ_DATA = {
+window.QUIZ_DATA = {
   id: "european-cities",
   title: "European Cities",
   description: "Test your knowledge of cities across Europe",

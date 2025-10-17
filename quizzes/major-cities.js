@@ -1,4 +1,4 @@
-const QUIZ_DATA = {
+window.QUIZ_DATA = {
   id: "major-cities",
   title: "Major World Cities",
   description: "Find the most populous and famous cities across the globe",
