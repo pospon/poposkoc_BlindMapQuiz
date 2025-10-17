@@ -9,8 +9,11 @@ Blind Map Quiz is a simple, educational web application that tests your geograph
 ## Features
 
 - **Interactive Map**: Powered by Leaflet.js with a clean, label-free world map
+- **Multiple Rounds**: Play through 10 rounds with randomly selected cities from around the world
+- **Score Tracking**: Earn up to 1000 points per round based on accuracy
 - **Instant Feedback**: Visual markers show your guess vs. the actual location
 - **Distance Calculation**: Uses the Haversine formula to calculate the distance between your guess and the correct location in kilometers
+- **Game Statistics**: Track your progress with round counter, cumulative score, and average distance
 - **Simple UI**: Minimalist design focused on the learning experience
 - **No Backend Required**: Runs entirely in the browser
 - **Responsive Design**: Works on both desktop and mobile devices
@@ -55,6 +58,9 @@ That's it! The application will load and you can start playing.
    - A red marker for the actual location
    - A line connecting the two points
    - The distance between your guess and the actual location in kilometers
+   - Your score for that round (max 1000 points based on accuracy)
+5. Click "Next Round" to continue to the next location
+6. Complete all 10 rounds to see your final score and average distance
 
 ## Project Structure
 
@@ -69,15 +75,38 @@ poposkoc_BlindMapQuiz/
 
 The application uses the Haversine formula to calculate the great-circle distance between two points on Earth given their latitude and longitude coordinates. This provides an accurate measure of how close your guess was to the actual location.
 
+### Scoring System
+
+Points are awarded based on accuracy:
+- **Perfect guess** (0 km away): 1000 points
+- **Close guess** (100 km away): ~950 points
+- **Moderate guess** (500 km away): ~750 points
+- **Far guess** (1000+ km away): <500 points
+
+The formula is: `max(0, 1000 - (distance / 20))`
+
+### Location Database
+
+The game includes 20 major cities from around the world:
+- Europe: Paris, London, Berlin, Rome, Moscow, Istanbul
+- Asia: Tokyo, Mumbai, Singapore, Beijing, Bangkok, Dubai
+- Americas: New York, Los Angeles, Toronto, Mexico City, Rio de Janeiro, Buenos Aires
+- Oceania: Sydney
+- Africa: Cairo
+
+Each game randomly selects 10 cities for variety.
+
 ## Future Enhancements
 
 Potential improvements could include:
-- Multiple rounds with different locations
-- Score tracking system
+- ✅ ~~Multiple rounds with different locations~~ (Implemented!)
+- ✅ ~~Score tracking system~~ (Implemented!)
 - Difficulty levels (continents, countries, cities)
 - Timer-based challenges
-- Leaderboard functionality
-- Random location selection from a database
+- Leaderboard functionality with localStorage
+- Expanded location database
+- Hints system (show continent, region, etc.)
+- Multiplayer mode
 
 ## License
 

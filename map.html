@@ -21,11 +21,84 @@
       border: 1px solid #ccc;
       font-family: sans-serif;
     }
+    .stats-box {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      padding: 8px 12px;
+      z-index: 1000;
+      border: 1px solid #ccc;
+      font-family: sans-serif;
+      text-align: right;
+    }
+    .next-btn {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: none;
+      font-family: sans-serif;
+    }
+    .next-btn:hover {
+      background: #45a049;
+    }
+    .game-over {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1001;
+      background: white;
+      padding: 30px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      text-align: center;
+      font-family: sans-serif;
+      display: none;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .game-over h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    .restart-btn {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .restart-btn:hover {
+      background: #0b7dda;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
-  <div class="info-box" id="info">Guess the location: <strong>Paris</strong></div>
+  <div class="info-box" id="info">Guess the location: <strong>Loading...</strong></div>
+  <div class="stats-box" id="stats">
+    <div>Round: <strong id="round">1</strong> / <strong id="total-rounds">10</strong></div>
+    <div>Score: <strong id="score">0</strong></div>
+  </div>
+  <button class="next-btn" id="next-btn">Next Round</button>
+  <div class="game-over" id="game-over">
+    <h2>Game Over!</h2>
+    <p>Final Score: <strong id="final-score">0</strong></p>
+    <p id="average-distance"></p>
+    <button class="restart-btn" onclick="location.reload()">Play Again</button>
+  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -37,28 +110,64 @@
       attribution: '',
     }).addTo(map);
 
-    const correctLocation = {
-      name: "Paris",
-      lat: 48.8566,
-      lng: 2.3522
-    };
+    // ========== LOCATION DATABASE ==========
+    const locations = [
+      { name: "Paris", lat: 48.8566, lng: 2.3522 },
+      { name: "Tokyo", lat: 35.6762, lng: 139.6503 },
+      { name: "New York", lat: 40.7128, lng: -74.0060 },
+      { name: "Sydney", lat: -33.8688, lng: 151.2093 },
+      { name: "Cairo", lat: 30.0444, lng: 31.2357 },
+      { name: "Moscow", lat: 55.7558, lng: 37.6173 },
+      { name: "Rio de Janeiro", lat: -22.9068, lng: -43.1729 },
+      { name: "Mumbai", lat: 19.0760, lng: 72.8777 },
+      { name: "London", lat: 51.5074, lng: -0.1278 },
+      { name: "Dubai", lat: 25.2048, lng: 55.2708 },
+      { name: "Singapore", lat: 1.3521, lng: 103.8198 },
+      { name: "Los Angeles", lat: 34.0522, lng: -118.2437 },
+      { name: "Toronto", lat: 43.6532, lng: -79.3832 },
+      { name: "Berlin", lat: 52.5200, lng: 13.4050 },
+      { name: "Rome", lat: 41.9028, lng: 12.4964 },
+      { name: "Istanbul", lat: 41.0082, lng: 28.9784 },
+      { name: "Beijing", lat: 39.9042, lng: 116.4074 },
+      { name: "Mexico City", lat: 19.4326, lng: -99.1332 },
+      { name: "Buenos Aires", lat: -34.6037, lng: -58.3816 },
+      { name: "Bangkok", lat: 13.7563, lng: 100.5018 }
+    ];
 
+    // ========== GAME STATE ==========
+    const TOTAL_ROUNDS = 10;
+    let currentRound = 0;
+    let score = 0;
+    let totalDistance = 0;
     let hasGuessed = false;
+    let currentLocation = null;
+    let markers = [];
+    let lines = [];
+
+    // Shuffle and select locations for this game
+    const gameLocations = shuffleArray([...locations]).slice(0, TOTAL_ROUNDS);
 
     // ========== CLICK HANDLER ==========
     map.on('click', function(e) {
-      if (hasGuessed) return;
+      if (hasGuessed || !currentLocation) return;
 
       const userLat = e.latlng.lat;
       const userLng = e.latlng.lng;
 
-      const distance = getDistanceFromLatLonInKm(userLat, userLng, correctLocation.lat, correctLocation.lng);
+      const distance = getDistanceFromLatLonInKm(userLat, userLng, currentLocation.lat, currentLocation.lng);
+      totalDistance += distance;
+
+      // Calculate score based on distance (max 1000 points per round)
+      // Perfect guess (0 km) = 1000 points, decreases as distance increases
+      const roundScore = Math.max(0, Math.floor(1000 - (distance / 20)));
+      score += roundScore;
 
       // Add user marker
-      L.marker([userLat, userLng], { title: "Your Guess" }).addTo(map);
+      const userMarker = L.marker([userLat, userLng], { title: "Your Guess" }).addTo(map);
+      markers.push(userMarker);
 
       // Add correct marker
-      L.marker([correctLocation.lat, correctLocation.lng], {
+      const correctMarker = L.marker([currentLocation.lat, currentLocation.lng], {
         title: "Correct Location",
         icon: L.icon({
           iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
@@ -66,21 +175,74 @@
           iconAnchor: [15, 30]
         })
       }).addTo(map);
+      markers.push(correctMarker);
 
       // Draw line between guess and correct
-      L.polyline([
+      const line = L.polyline([
         [userLat, userLng],
-        [correctLocation.lat, correctLocation.lng]
+        [currentLocation.lat, currentLocation.lng]
       ], { color: 'red' }).addTo(map);
+      lines.push(line);
 
       // Feedback
       const infoBox = document.getElementById('info');
-      infoBox.innerHTML = `You guessed ${distance.toFixed(1)} km from the correct location.`;
+      infoBox.innerHTML = `You guessed ${distance.toFixed(1)} km away. +${roundScore} points!`;
+
+      // Update score display
+      document.getElementById('score').textContent = score;
+
+      // Show next button
+      document.getElementById('next-btn').style.display = 'block';
 
       hasGuessed = true;
     });
 
-    // ========== DISTANCE FUNCTION ==========
+    // ========== ROUND MANAGEMENT ==========
+    function startNewRound() {
+      if (currentRound >= TOTAL_ROUNDS) {
+        endGame();
+        return;
+      }
+
+      hasGuessed = false;
+      currentLocation = gameLocations[currentRound];
+      currentRound++;
+
+      // Clear previous markers and lines
+      markers.forEach(marker => map.removeLayer(marker));
+      lines.forEach(line => map.removeLayer(line));
+      markers = [];
+      lines = [];
+
+      // Reset map view
+      map.setView([20, 0], 2);
+
+      // Update UI
+      document.getElementById('info').innerHTML = `Guess the location: <strong>${currentLocation.name}</strong>`;
+      document.getElementById('round').textContent = currentRound;
+      document.getElementById('total-rounds').textContent = TOTAL_ROUNDS;
+      document.getElementById('next-btn').style.display = 'none';
+    }
+
+    function endGame() {
+      const avgDistance = (totalDistance / TOTAL_ROUNDS).toFixed(1);
+
+      document.getElementById('final-score').textContent = score;
+      document.getElementById('average-distance').textContent = `Average distance: ${avgDistance} km`;
+      document.getElementById('game-over').style.display = 'block';
+      document.getElementById('next-btn').style.display = 'none';
+    }
+
+    // ========== HELPER FUNCTIONS ==========
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
     function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
       const R = 6371; // Radius of Earth in km
       const dLat = deg2rad(lat2 - lat1);
@@ -96,6 +258,12 @@
     function deg2rad(deg) {
       return deg * (Math.PI / 180);
     }
+
+    // ========== EVENT LISTENERS ==========
+    document.getElementById('next-btn').addEventListener('click', startNewRound);
+
+    // ========== INITIALIZE GAME ==========
+    startNewRound();
   </script>
 </body>
 </html>
