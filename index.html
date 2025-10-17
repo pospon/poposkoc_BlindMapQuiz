@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Blind Map Quiz - Choose Your Challenge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      padding: 20px;
+    }
+
+    .quiz-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .quiz-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+    }
+
+    .quiz-card h2 {
+      color: #667eea;
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .quiz-card p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .difficulty {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .difficulty.easy {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .difficulty.medium {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .difficulty.hard {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .rounds {
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    footer {
+      margin-top: 50px;
+      text-align: center;
+      color: white;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .quiz-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🗺️ Blind Map Quiz</h1>
+      <p class="subtitle">Test your geography knowledge with different challenges</p>
+    </header>
+
+    <div class="quiz-grid">
+      <a href="map.html?quiz=world-capitals" class="quiz-card">
+        <h2>🌍 World Capitals</h2>
+        <p>Identify the locations of major capital cities around the world. From Paris to Tokyo, test your knowledge of world capitals.</p>
+        <div class="quiz-meta">
+          <span class="difficulty medium">Medium</span>
+          <span class="rounds">10 rounds</span>
+        </div>
+      </a>
+
+      <a href="map.html?quiz=major-cities" class="quiz-card">
+        <h2>🏙️ Major World Cities</h2>
+        <p>Find the most populous and famous cities across the globe. Can you locate New York, Sydney, and Dubai?</p>
+        <div class="quiz-meta">
+          <span class="difficulty medium">Medium</span>
+          <span class="rounds">10 rounds</span>
+        </div>
+      </a>
+
+      <a href="map.html?quiz=european-cities" class="quiz-card">
+        <h2>🇪🇺 European Cities</h2>
+        <p>Test your knowledge of cities across Europe. From London to Athens, explore the European continent.</p>
+        <div class="quiz-meta">
+          <span class="difficulty easy">Easy</span>
+          <span class="rounds">10 rounds</span>
+        </div>
+      </a>
+
+      <a href="map.html?quiz=asian-cities" class="quiz-card">
+        <h2>🌏 Asian Cities</h2>
+        <p>Locate major cities across the Asian continent. A challenging quiz covering the world's largest continent.</p>
+        <div class="quiz-meta">
+          <span class="difficulty hard">Hard</span>
+          <span class="rounds">10 rounds</span>
+        </div>
+      </a>
+
+      <a href="map.html?quiz=us-cities" class="quiz-card">
+        <h2>🇺🇸 United States Cities</h2>
+        <p>Find major cities across the United States. From coast to coast, test your US geography skills.</p>
+        <div class="quiz-meta">
+          <span class="difficulty easy">Easy</span>
+          <span class="rounds">10 rounds</span>
+        </div>
+      </a>
+    </div>
+
+    <footer>
+      <p>Choose a quiz to get started!</p>
+    </footer>
+  </div>
+</body>
+</html>

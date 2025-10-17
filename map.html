@@ -8,6 +8,7 @@
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
+  <script id="quiz-data-script"></script>
   <style>
     html, body { margin: 0; height: 100%; }
     #map { height: 100vh; }
@@ -83,9 +84,45 @@
     .restart-btn:hover {
       background: #0b7dda;
     }
+    .back-btn {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      padding: 8px 16px;
+      font-size: 14px;
+      background: #f0f0f0;
+      color: #333;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: sans-serif;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .back-btn:hover {
+      background: #e0e0e0;
+    }
+    .quiz-title {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: white;
+      padding: 8px 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: sans-serif;
+      font-weight: bold;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
+  <a href="index.html" class="back-btn">← Back to Quizzes</a>
+  <div class="quiz-title" id="quiz-title">Quiz</div>
   <div id="map"></div>
   <div class="info-box" id="info">Guess the location: <strong>Loading...</strong></div>
   <div class="stats-box" id="stats">
@@ -98,11 +135,46 @@
     <p>Final Score: <strong id="final-score">0</strong></p>
     <p id="average-distance"></p>
     <button class="restart-btn" onclick="location.reload()">Play Again</button>
+    <a href="index.html" class="restart-btn" style="display: inline-block; margin-left: 10px; background: #6c757d;">Choose Another Quiz</a>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
+    // ========== GET QUIZ FROM URL ==========
+    const urlParams = new URLSearchParams(window.location.search);
+    const quizId = urlParams.get('quiz') || 'world-capitals';
+
+    // ========== LOAD QUIZ DATA ==========
+    let QUIZ_DATA = null;
+    let TOTAL_ROUNDS = 10;
+    let locations = [];
+
+    // Load the quiz data file
+    const script = document.getElementById('quiz-data-script');
+    script.src = `quizzes/${quizId}.js`;
+    script.onload = function() {
+      if (typeof QUIZ_DATA === 'undefined') {
+        alert('Quiz not found! Redirecting to home...');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Set quiz data
+      locations = QUIZ_DATA.locations;
+      TOTAL_ROUNDS = QUIZ_DATA.totalRounds;
+      document.getElementById('quiz-title').textContent = QUIZ_DATA.title;
+      document.title = `Blind Map Quiz - ${QUIZ_DATA.title}`;
+
+      // Start the game
+      initializeGame();
+    };
+
+    script.onerror = function() {
+      alert('Failed to load quiz! Redirecting to home...');
+      window.location.href = 'index.html';
+    };
+
     // ========== SETUP ==========
     const map = L.map('map').setView([20, 0], 2);
 
@@ -110,32 +182,7 @@
       attribution: '',
     }).addTo(map);
 
-    // ========== LOCATION DATABASE ==========
-    const locations = [
-      { name: "Paris", lat: 48.8566, lng: 2.3522 },
-      { name: "Tokyo", lat: 35.6762, lng: 139.6503 },
-      { name: "New York", lat: 40.7128, lng: -74.0060 },
-      { name: "Sydney", lat: -33.8688, lng: 151.2093 },
-      { name: "Cairo", lat: 30.0444, lng: 31.2357 },
-      { name: "Moscow", lat: 55.7558, lng: 37.6173 },
-      { name: "Rio de Janeiro", lat: -22.9068, lng: -43.1729 },
-      { name: "Mumbai", lat: 19.0760, lng: 72.8777 },
-      { name: "London", lat: 51.5074, lng: -0.1278 },
-      { name: "Dubai", lat: 25.2048, lng: 55.2708 },
-      { name: "Singapore", lat: 1.3521, lng: 103.8198 },
-      { name: "Los Angeles", lat: 34.0522, lng: -118.2437 },
-      { name: "Toronto", lat: 43.6532, lng: -79.3832 },
-      { name: "Berlin", lat: 52.5200, lng: 13.4050 },
-      { name: "Rome", lat: 41.9028, lng: 12.4964 },
-      { name: "Istanbul", lat: 41.0082, lng: 28.9784 },
-      { name: "Beijing", lat: 39.9042, lng: 116.4074 },
-      { name: "Mexico City", lat: 19.4326, lng: -99.1332 },
-      { name: "Buenos Aires", lat: -34.6037, lng: -58.3816 },
-      { name: "Bangkok", lat: 13.7563, lng: 100.5018 }
-    ];
-
     // ========== GAME STATE ==========
-    const TOTAL_ROUNDS = 10;
     let currentRound = 0;
     let score = 0;
     let totalDistance = 0;
@@ -143,9 +190,7 @@
     let currentLocation = null;
     let markers = [];
     let lines = [];
-
-    // Shuffle and select locations for this game
-    const gameLocations = shuffleArray([...locations]).slice(0, TOTAL_ROUNDS);
+    let gameLocations = [];
 
     // ========== CLICK HANDLER ==========
     map.on('click', function(e) {
@@ -263,7 +308,11 @@
     document.getElementById('next-btn').addEventListener('click', startNewRound);
 
     // ========== INITIALIZE GAME ==========
-    startNewRound();
+    function initializeGame() {
+      // Shuffle and select locations for this game
+      gameLocations = shuffleArray([...locations]).slice(0, TOTAL_ROUNDS);
+      startNewRound();
+    }
   </script>
 </body>
 </html>
