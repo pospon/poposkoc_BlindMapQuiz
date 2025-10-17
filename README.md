@@ -2,6 +2,8 @@
 
 An interactive web-based geography quiz that challenges users to locate cities on a blank world map.
 
+**🌐 Play Online:** [https://pospon.github.io/poposkoc_BlindMapQuiz/](https://pospon.github.io/poposkoc_BlindMapQuiz/)
+
 ## Overview
 
 Blind Map Quiz is a simple, educational web application that tests your geographical knowledge. Choose from multiple quiz themes, each with different sets of locations. Players are given the name of a city and must click on a blank map to guess its location. The app provides instant feedback by showing the actual location and calculating the distance between the guess and the correct position.
@@ -45,9 +47,15 @@ No installation required! Just a modern web browser.
 
 ### Running the Application
 
+**Option 1: Play Online**
+
+Simply visit [https://pospon.github.io/poposkoc_BlindMapQuiz/](https://pospon.github.io/poposkoc_BlindMapQuiz/) to play directly in your browser!
+
+**Option 2: Run Locally**
+
 1. Clone this repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/pospon/poposkoc_BlindMapQuiz.git
    cd poposkoc_BlindMapQuiz
    ```
 
